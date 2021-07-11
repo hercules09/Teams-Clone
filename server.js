@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+let count = 0;
+
 const server = require("http").Server(app);
 const { v4: uuidv4 } = require("uuid");
 app.set("view engine", "ejs");
@@ -24,6 +26,7 @@ app.get("/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
+
 io.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId, userName) => {
     socket.join(roomId);
@@ -33,5 +36,6 @@ io.on("connection", (socket) => {
     });
   });
 });
+
 
 server.listen(process.env.PORT || 3030);

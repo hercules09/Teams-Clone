@@ -3,7 +3,7 @@ const videoGrid = document.getElementById("video-grid");
 const myVideo = document.createElement("video");
 const showChat = document.querySelector("#showChat");
 const backBtn = document.querySelector(".header__back");
-const myVideo2 = document.createElement("video2");
+let myVideo2 = document.createElement("video");
 const videoGrid2 = document.getElementById("video-grid2");
 var currentPeer;
 myVideo.muted = true;
@@ -67,11 +67,11 @@ peer.on("open", (id) => {
   socket.emit("join-room", ROOM_ID, id, user);
 });
 
-const addVideoStream = (video, stream) => {
+const addVideoStream = (video, stream, _videoGrid= videoGrid) => {
   video.srcObject = stream;
   video.addEventListener("loadedmetadata", () => {
     video.play();
-    videoGrid.append(video);
+    _videoGrid.append(video);
     
   });
 };
@@ -139,55 +139,33 @@ function stopScreenShare(){
     return s.track.kind == videoTrack.kind;
   })
 }
-/*document.getElementById("ScreenShare").addEventListener('click',(e)=>{
-        navigator.mediaDevices.getDisplayMedia({
-          video: {
-              cursor: "always"
-          },
-          audio: {
-            echoCancellation: true,
-            noiseSuppresion: true
-          }
-        }).then((stream)=>{
-           let videoTrack = stream.getVideoTracks()[0];
-           addVideoStream2(myVideo2, stream.getVideoTracks()[0] )
-           videoTrack.onended = function(){
-             stopScreenShare();
-           }
-           /*videoTrack.srcObject= stream;
-           myVideo2.append(videoTrack);*/
-           /*let sender= currentPeer.getSender().find(function(s){
-             return s.track.kind == videoTrack.kind
-           })
-           sender.replaceTrack(videoTrack)
-        }).catch((err)=>{
-          console.log("unable to get display media"+ err)
-        })
-})*/
+
 document.getElementById('share-button').addEventListener('click', async () => {
   
-    let displayMediaStream = navigator.mediaDevices.getDisplayMedia();
+    let displayMediaStream = await navigator.mediaDevices.getDisplayMedia();
+   
   
-  
-
+  let temp1234 = videoGrid.appendChild(myVideo2);
   //show what you are showing in your "self-view" video.
-  document.getElementById('video-grid2').srcObject = displayMediaStream;
-  addVideoStream2(myVideo2, displayMediaStream )
+  //document.getElementById('video-grid').srcObject = displayMediaStream;
+  addVideoStream(myVideo2, displayMediaStream )
 
   //hide the share button and display the "stop-sharing" one
   document.getElementById('share-button').style.display = 'none';
-  //document.getElementById('stop-share-button').style.display = 'inline';
+  document.getElementById('stop-share-button').style.display = 'inline';
 });
 
-//document.getElementById('stop-share-button').addEventListener('click', async (event) => {
-  //senders.find(sender => sender.track.kind === 'video')
-    //.replaceTrack(userMediaStream.getTracks().find(track => track.kind === 'video'));
-  //document.getElementById('video-grid2').srcObject = userMediaStream;
-  //document.getElementById('share-button').style.display = 'inline';
-  //document.getElementById('stop-share-button').style.display = 'none';
-//});
+document.getElementById('stop-share-button').addEventListener('click', async (event) => {
+  myVideo2.remove()
+  myVideo2=document.createElement("video");
+  /*senders.find(sender => sender.track.kind === 'video')
+    .replaceTrack(userMediaStream.getTracks().find(track => track.kind === 'video'));
+  document.getElementById('video-grid').srcObject = userMediaStream;*/
+  document.getElementById('share-button').style.display = 'inline';
+  document.getElementById('stop-share-button').style.display = 'none';
+});
 
-const addVideoStream2 = (video, stream) => {
+/*const addVideoStream2 = (video, stream) => {
   
   video.srcObject = stream;
   video.addEventListener("loadedmetadata", () => {
@@ -195,7 +173,7 @@ const addVideoStream2 = (video, stream) => {
     videoGrid2.append(video);
     
   });
-};
+};*/
 socket.on("createMessage", (message, userName) => {
   messages.innerHTML =
     messages.innerHTML +
